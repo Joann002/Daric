@@ -1,106 +1,8 @@
-<template>
-    <AuthenticatedLayout>
-        <Head title="Modifier le compte" />
-
-        <div class="py-12">
-            <div class="mx-auto max-w-2xl sm:px-6 lg:px-8">
-                <div class="mb-6">
-                    <Link 
-                        :href="route('accounts.show', account.id)"
-                        class="text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                    >
-                        ← Retour au compte
-                    </Link>
-                </div>
-
-                <div class="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
-                    <div class="p-6">
-                        <h2 class="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
-                            Modifier le compte
-                        </h2>
-
-                        <form @submit.prevent="submit" class="space-y-6">
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Nom du compte *
-                                </label>
-                                <input 
-                                    v-model="form.name"
-                                    id="name"
-                                    type="text"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                                    required
-                                />
-                                <p v-if="form.errors.name" class="mt-1 text-sm text-red-600">{{ form.errors.name }}</p>
-                            </div>
-
-                            <div>
-                                <label for="type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Type de compte *
-                                </label>
-                                <select 
-                                    v-model="form.type"
-                                    id="type"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                                    required
-                                >
-                                    <option value="cash">💵 Espèces</option>
-                                    <option value="banque">🏦 Banque</option>
-                                    <option value="mobile_money">📱 Mobile Money</option>
-                                </select>
-                                <p v-if="form.errors.type" class="mt-1 text-sm text-red-600">{{ form.errors.type }}</p>
-                            </div>
-
-                            <div>
-                                <label for="currency" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Devise *
-                                </label>
-                                <select 
-                                    v-model="form.currency"
-                                    id="currency"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                                    required
-                                >
-                                    <option value="XAF">XAF - Franc CFA</option>
-                                    <option value="EUR">EUR - Euro</option>
-                                    <option value="USD">USD - Dollar US</option>
-                                    <option value="GBP">GBP - Livre Sterling</option>
-                                </select>
-                                <p v-if="form.errors.currency" class="mt-1 text-sm text-red-600">{{ form.errors.currency }}</p>
-                            </div>
-
-                            <div class="rounded-md bg-yellow-50 p-4 dark:bg-yellow-900/20">
-                                <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                                    ⚠️ Le solde ne peut pas être modifié directement. Utilisez les transactions pour mettre à jour le solde.
-                                </p>
-                            </div>
-
-                            <div class="flex items-center justify-end space-x-4">
-                                <Link 
-                                    :href="route('accounts.show', account.id)"
-                                    class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-                                >
-                                    Annuler
-                                </Link>
-                                <button 
-                                    type="submit"
-                                    :disabled="form.processing"
-                                    class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
-                                >
-                                    Mettre à jour
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </AuthenticatedLayout>
-</template>
-
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import FormPage from '@/Components/ui/FormPage.vue';
+import FormField from '@/Components/ui/FormField.vue';
+import Icon from '@/Components/Icon.vue';
 
 const props = defineProps({
     account: Object,
@@ -112,7 +14,64 @@ const form = useForm({
     currency: props.account.currency,
 });
 
-const submit = () => {
-    form.put(route('accounts.update', props.account.id));
-};
+const submit = () => form.put(route('accounts.update', props.account.id));
 </script>
+
+<template>
+    <FormPage
+        title="Modifier le compte"
+        :back-href="route('accounts.show', account.id)"
+        back-label="Retour au compte"
+    >
+        <Head title="Modifier le compte" />
+
+        <form @submit.prevent="submit" class="space-y-5">
+            <FormField label="Nom du compte" required :error="form.errors.name">
+                <input v-model="form.name" type="text" class="input" required />
+            </FormField>
+
+            <FormField label="Type de compte" required :error="form.errors.type">
+                <select v-model="form.type" class="input" required>
+                    <option value="cash">Espèces</option>
+                    <option value="banque">Banque</option>
+                    <option value="mobile_money">Mobile Money</option>
+                </select>
+            </FormField>
+
+            <FormField label="Devise" required :error="form.errors.currency">
+                <select v-model="form.currency" class="input" required>
+                    <option value="XAF">XAF — Franc CFA</option>
+                    <option value="EUR">EUR — Euro</option>
+                    <option value="USD">USD — Dollar US</option>
+                    <option value="GBP">GBP — Livre Sterling</option>
+                </select>
+            </FormField>
+
+            <div
+                class="flex items-start gap-2.5 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-500/10 dark:text-amber-300"
+            >
+                <Icon name="scale" class="mt-0.5 h-5 w-5 shrink-0" />
+                <p>
+                    Le solde ne se modifie pas ici : utilisez les transactions
+                    pour l'ajuster.
+                </p>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <Link
+                    :href="route('accounts.show', account.id)"
+                    class="btn-secondary"
+                >
+                    Annuler
+                </Link>
+                <button
+                    type="submit"
+                    class="btn-primary"
+                    :disabled="form.processing"
+                >
+                    Mettre à jour
+                </button>
+            </div>
+        </form>
+    </FormPage>
+</template>

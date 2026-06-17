@@ -1,9 +1,3 @@
-<template>
-    <div class="relative h-64">
-        <Line :data="chartData" :options="chartOptions" />
-    </div>
-</template>
-
 <script setup>
 import { computed } from 'vue';
 import { Line } from 'vue-chartjs';
@@ -16,7 +10,10 @@ import {
     PointElement,
     LinearScale,
     CategoryScale,
+    Filler,
 } from 'chart.js';
+import { useDarkMode } from '@/composables/useDarkMode';
+import { formatCurrency } from '@/composables/useFormat';
 
 ChartJS.register(
     Title,
@@ -25,87 +22,96 @@ ChartJS.register(
     LineElement,
     PointElement,
     LinearScale,
-    CategoryScale
+    CategoryScale,
+    Filler,
 );
 
 const props = defineProps({
     data: Array,
 });
 
-const chartData = computed(() => {
+const { isDark } = useDarkMode();
+
+const chartData = computed(() => ({
+    labels: props.data.map((item) => item.month),
+    datasets: [
+        {
+            label: 'Revenus',
+            data: props.data.map((item) => item.income),
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.12)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#10b981',
+        },
+        {
+            label: 'Dépenses',
+            data: props.data.map((item) => item.expense),
+            borderColor: '#f43f5e',
+            backgroundColor: 'rgba(244, 63, 94, 0.10)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#f43f5e',
+        },
+    ],
+}));
+
+const chartOptions = computed(() => {
+    const tick = isDark.value ? '#94a3b8' : '#64748b';
+    const grid = isDark.value
+        ? 'rgba(148, 163, 184, 0.12)'
+        : 'rgba(100, 116, 139, 0.10)';
+
     return {
-        labels: props.data.map(item => item.month),
-        datasets: [
-            {
-                label: 'Revenus',
-                data: props.data.map(item => item.income),
-                borderColor: '#10B981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                tension: 0.4,
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: tick,
+                    padding: 16,
+                    usePointStyle: true,
+                    pointStyle: 'circle',
+                    font: { size: 12, family: 'Figtree' },
+                },
             },
-            {
-                label: 'Dépenses',
-                data: props.data.map(item => item.expense),
-                borderColor: '#EF4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                tension: 0.4,
+            tooltip: {
+                callbacks: {
+                    label: (context) =>
+                        `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`,
+                },
             },
-        ],
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    color: tick,
+                    callback: (value) =>
+                        new Intl.NumberFormat('fr-FR', {
+                            notation: 'compact',
+                            compactDisplay: 'short',
+                        }).format(value),
+                },
+                grid: { color: grid },
+                border: { display: false },
+            },
+            x: {
+                ticks: { color: tick },
+                grid: { display: false },
+                border: { display: false },
+            },
+        },
     };
 });
-
-const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: {
-            position: 'bottom',
-            labels: {
-                color: '#9CA3AF',
-                padding: 15,
-                font: {
-                    size: 12,
-                },
-            },
-        },
-        tooltip: {
-            callbacks: {
-                label: function(context) {
-                    const label = context.dataset.label || '';
-                    const value = new Intl.NumberFormat('fr-FR', {
-                        style: 'currency',
-                        currency: 'XAF',
-                        minimumFractionDigits: 0,
-                    }).format(context.parsed.y);
-                    return `${label}: ${value}`;
-                },
-            },
-        },
-    },
-    scales: {
-        y: {
-            beginAtZero: true,
-            ticks: {
-                color: '#9CA3AF',
-                callback: function(value) {
-                    return new Intl.NumberFormat('fr-FR', {
-                        notation: 'compact',
-                        compactDisplay: 'short',
-                    }).format(value);
-                },
-            },
-            grid: {
-                color: 'rgba(156, 163, 175, 0.1)',
-            },
-        },
-        x: {
-            ticks: {
-                color: '#9CA3AF',
-            },
-            grid: {
-                color: 'rgba(156, 163, 175, 0.1)',
-            },
-        },
-    },
-};
 </script>
+
+<template>
+    <div class="relative h-64">
+        <Line :data="chartData" :options="chartOptions" />
+    </div>
+</template>

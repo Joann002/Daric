@@ -1,117 +1,131 @@
-<template>
-    <AuthenticatedLayout>
-        <Head title="Mes comptes" />
-
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="mb-6 flex items-center justify-between">
-                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">
-                        Mes comptes
-                    </h2>
-                    <Link 
-                        :href="route('accounts.create')"
-                        class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
-                    >
-                        + Nouveau compte
-                    </Link>
-                </div>
-
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    <div 
-                        v-for="account in accounts" 
-                        :key="account.id"
-                        class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800"
-                    >
-                        <div class="p-6">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <span class="text-3xl">{{ getAccountIcon(account.type) }}</span>
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                            {{ account.name }}
-                                        </h3>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            {{ getAccountType(account.type) }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <p class="text-3xl font-bold" :class="account.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                                    {{ formatCurrency(account.balance, account.currency) }}
-                                </p>
-                            </div>
-
-                            <div class="mt-6 flex space-x-2">
-                                <Link 
-                                    :href="route('accounts.show', account.id)"
-                                    class="flex-1 rounded-md bg-gray-100 px-3 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
-                                >
-                                    Voir
-                                </Link>
-                                <Link 
-                                    :href="route('accounts.edit', account.id)"
-                                    class="flex-1 rounded-md bg-indigo-100 px-3 py-2 text-center text-sm font-medium text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900 dark:text-indigo-300"
-                                >
-                                    Modifier
-                                </Link>
-                                <button 
-                                    @click="deleteAccount(account.id)"
-                                    class="rounded-md bg-red-100 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-200 dark:bg-red-900 dark:text-red-300"
-                                >
-                                    Supprimer
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <p v-if="accounts.length === 0" class="mt-8 text-center text-gray-500 dark:text-gray-400">
-                    Aucun compte. Créez votre premier compte pour commencer.
-                </p>
-            </div>
-        </div>
-    </AuthenticatedLayout>
-</template>
-
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import PageHeader from '@/Components/ui/PageHeader.vue';
+import Card from '@/Components/ui/Card.vue';
+import EmptyState from '@/Components/ui/EmptyState.vue';
+import Icon from '@/Components/Icon.vue';
+import { formatCurrency } from '@/composables/useFormat';
 
-const props = defineProps({
+defineProps({
     accounts: Array,
 });
 
-const getAccountIcon = (type) => {
-    const icons = {
-        cash: '💵',
-        banque: '🏦',
-        mobile_money: '📱',
-    };
-    return icons[type] || '💳';
+const typeMeta = {
+    cash: {
+        label: 'Espèces',
+        icon: 'banknotes',
+        tone: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
+    },
+    banque: {
+        label: 'Banque',
+        icon: 'wallet',
+        tone: 'bg-sky-50 text-sky-600 dark:bg-sky-500/10 dark:text-sky-400',
+    },
+    mobile_money: {
+        label: 'Mobile Money',
+        icon: 'transfers',
+        tone: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
+    },
 };
 
-const getAccountType = (type) => {
-    const types = {
-        cash: 'Espèces',
-        banque: 'Banque',
-        mobile_money: 'Mobile Money',
-    };
-    return types[type] || type;
-};
-
-const formatCurrency = (amount, currency = 'XAF') => {
-    return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 0,
-    }).format(amount);
-};
+const meta = (type) => typeMeta[type] || typeMeta.banque;
 
 const deleteAccount = (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce compte ? Toutes les transactions associées seront également supprimées.')) {
+    if (
+        confirm(
+            'Supprimer ce compte ? Toutes les transactions associées seront aussi supprimées.',
+        )
+    ) {
         router.delete(route('accounts.destroy', id));
     }
 };
 </script>
+
+<template>
+    <AuthenticatedLayout>
+        <Head title="Mes comptes" />
+
+        <PageHeader title="Mes comptes" subtitle="Gérez vos comptes et soldes">
+            <template #actions>
+                <Link :href="route('accounts.create')" class="btn-primary">
+                    <Icon name="plus" class="h-4 w-4" />
+                    Nouveau compte
+                </Link>
+            </template>
+        </PageHeader>
+
+        <div
+            v-if="accounts.length"
+            class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+        >
+            <Card v-for="account in accounts" :key="account.id">
+                <div class="flex items-center gap-3">
+                    <span
+                        class="flex h-11 w-11 items-center justify-center rounded-xl"
+                        :class="meta(account.type).tone"
+                    >
+                        <Icon :name="meta(account.type).icon" class="h-6 w-6" />
+                    </span>
+                    <div>
+                        <h3 class="font-semibold text-slate-900 dark:text-white">
+                            {{ account.name }}
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">
+                            {{ meta(account.type).label }}
+                        </p>
+                    </div>
+                </div>
+
+                <p
+                    class="tnum mt-4 text-2xl font-bold"
+                    :class="
+                        account.balance >= 0
+                            ? 'text-slate-900 dark:text-white'
+                            : 'text-rose-600 dark:text-rose-400'
+                    "
+                >
+                    {{ formatCurrency(account.balance) }}
+                </p>
+
+                <div class="mt-5 flex items-center gap-2">
+                    <Link
+                        :href="route('accounts.show', account.id)"
+                        class="btn-secondary flex-1 !py-2 text-xs"
+                    >
+                        Voir
+                    </Link>
+                    <Link
+                        :href="route('accounts.edit', account.id)"
+                        class="btn-secondary !py-2 text-xs"
+                        aria-label="Modifier"
+                    >
+                        <Icon name="edit" class="h-4 w-4" />
+                    </Link>
+                    <button
+                        @click="deleteAccount(account.id)"
+                        class="btn-ghost !py-2 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
+                        aria-label="Supprimer"
+                    >
+                        <Icon name="trash" class="h-4 w-4" />
+                    </button>
+                </div>
+            </Card>
+        </div>
+
+        <Card v-else>
+            <EmptyState
+                icon="wallet"
+                title="Aucun compte"
+                description="Créez votre premier compte pour commencer à suivre vos finances."
+            >
+                <template #action>
+                    <Link :href="route('accounts.create')" class="btn-primary">
+                        <Icon name="plus" class="h-4 w-4" />
+                        Nouveau compte
+                    </Link>
+                </template>
+            </EmptyState>
+        </Card>
+    </AuthenticatedLayout>
+</template>
