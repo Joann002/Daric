@@ -1,12 +1,15 @@
 import '../css/app.css';
 import './bootstrap';
+import { initDarkMode } from './composables/useDarkMode';
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+initDarkMode();
+
+const appName = import.meta.env.VITE_APP_NAME || 'Daric';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -22,6 +25,6 @@ createInertiaApp({
             .mount(el);
     },
     progress: {
-        color: '#4B5563',
+        color: '#059669',
     },
 });

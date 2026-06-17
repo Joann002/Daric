@@ -1,49 +1,55 @@
-<template>
-    <div :class="cardClasses" class="overflow-hidden rounded-lg shadow">
-        <div class="p-5">
-            <div class="flex items-center">
-                <div class="flex-shrink-0">
-                    <span class="text-3xl">{{ icon }}</span>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
-                            {{ title }}
-                        </dt>
-                        <dd class="mt-1 text-2xl font-semibold" :class="valueClass">
-                            {{ value }}
-                        </dd>
-                    </dl>
-                </div>
-            </div>
-        </div>
-    </div>
-</template>
-
 <script setup>
 import { computed } from 'vue';
+import Icon from '@/Components/Icon.vue';
 
 const props = defineProps({
     title: String,
     value: String,
-    icon: String,
-    color: {
-        type: String,
-        default: 'blue',
-    },
+    subtitle: { type: String, default: null },
+    icon: { type: String, default: 'banknotes' },
+    tone: { type: String, default: 'brand' }, // brand | emerald | rose | sky | amber | slate
 });
 
-const cardClasses = computed(() => {
-    return 'bg-white dark:bg-gray-800';
-});
+const tones = {
+    brand: 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400',
+    emerald:
+        'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
+    rose: 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400',
+    sky: 'bg-sky-50 text-sky-600 dark:bg-sky-500/10 dark:text-sky-400',
+    amber: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400',
+    slate: 'bg-slate-100 text-slate-600 dark:bg-slate-700/40 dark:text-slate-300',
+};
 
-const valueClass = computed(() => {
-    const colors = {
-        blue: 'text-blue-600 dark:text-blue-400',
-        green: 'text-green-600 dark:text-green-400',
-        red: 'text-red-600 dark:text-red-400',
-        yellow: 'text-yellow-600 dark:text-yellow-400',
-    };
-    return colors[props.color] || colors.blue;
-});
+const iconTone = computed(() => tones[props.tone] || tones.brand);
 </script>
+
+<template>
+    <div class="card p-5 transition hover:shadow-card-hover">
+        <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+                <p
+                    class="truncate text-sm font-medium text-slate-500 dark:text-slate-400"
+                >
+                    {{ title }}
+                </p>
+                <p
+                    class="tnum mt-2 text-2xl font-bold tracking-tight text-slate-900 dark:text-white"
+                >
+                    {{ value }}
+                </p>
+                <p
+                    v-if="subtitle"
+                    class="mt-1 truncate text-xs text-slate-400 dark:text-slate-500"
+                >
+                    {{ subtitle }}
+                </p>
+            </div>
+            <span
+                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                :class="iconTone"
+            >
+                <Icon :name="icon" class="h-6 w-6" />
+            </span>
+        </div>
+    </div>
+</template>
