@@ -59,6 +59,93 @@
     .label {
         @apply mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300;
     }
+
+    /* Styled native select: custom chevron, no default OS arrow */
+    select.input {
+        @apply cursor-pointer appearance-none bg-no-repeat pr-10;
+        background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E");
+        background-position: right 0.75rem center;
+        background-size: 1.1rem 1.1rem;
+    }
+
+    select.input::-ms-expand {
+        display: none;
+    }
+}
+
+/* Sparklines (@fnando/sparkline) */
+.sparkline--line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+.sparkline--fill {
+    fill: currentColor;
+    opacity: 0.1;
+    stroke: none;
+}
+.sparkline--spot {
+    fill: currentColor;
+    stroke: none;
+}
+.sparkline--cursor {
+    display: none;
+}
+
+/* FullCalendar theming */
+.daric-calendar {
+    --fc-border-color: #e2e8f0;
+    --fc-page-bg-color: transparent;
+    --fc-neutral-bg-color: #f8fafc;
+    --fc-today-bg-color: rgba(16, 185, 129, 0.08);
+    --fc-button-bg-color: #ffffff;
+    --fc-button-border-color: #e2e8f0;
+    --fc-button-text-color: #334155;
+    --fc-button-hover-bg-color: #f1f5f9;
+    --fc-button-hover-border-color: #cbd5e1;
+    --fc-button-active-bg-color: #059669;
+    --fc-button-active-border-color: #059669;
+    font-family: 'Figtree', sans-serif;
+    font-size: 0.85rem;
+}
+.daric-calendar .fc .fc-toolbar-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+.daric-calendar .fc .fc-button {
+    text-transform: capitalize;
+    border-radius: 0.6rem;
+    font-weight: 600;
+    box-shadow: none;
+}
+.daric-calendar .fc .fc-daygrid-day-number,
+.daric-calendar .fc .fc-col-header-cell-cushion {
+    color: #475569;
+    text-decoration: none;
+}
+.daric-calendar .fc-event {
+    border-radius: 0.4rem;
+    padding: 0 4px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.dark .daric-calendar {
+    --fc-border-color: #1e293b;
+    --fc-neutral-bg-color: #0f172a;
+    --fc-today-bg-color: rgba(16, 185, 129, 0.12);
+    --fc-button-bg-color: #1e293b;
+    --fc-button-border-color: #334155;
+    --fc-button-text-color: #e2e8f0;
+    --fc-button-hover-bg-color: #334155;
+    --fc-button-hover-border-color: #475569;
+}
+.dark .daric-calendar .fc .fc-toolbar-title {
+    color: #f8fafc;
+}
+.dark .daric-calendar .fc .fc-daygrid-day-number,
+.dark .daric-calendar .fc .fc-col-header-cell-cushion {
+    color: #cbd5e1;
 }
 
 /* Custom scrollbar */

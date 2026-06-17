@@ -2,11 +2,19 @@
 import { computed } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import Icon from '@/Components/Icon.vue';
+import Sparkline from '@/Components/Sparkline.vue';
 import { formatCurrency } from '@/composables/useFormat';
 
 const props = defineProps({
     account: Object,
 });
+
+const hasSpark = computed(
+    () => Array.isArray(props.account.sparkline) && props.account.sparkline.length > 1,
+);
+const sparkColor = computed(() =>
+    props.account.balance >= 0 ? '#10b981' : '#f43f5e',
+);
 
 const typeMeta = {
     cash: {
@@ -56,8 +64,17 @@ const balanceClass = computed(() =>
                 </p>
             </div>
         </div>
-        <p class="tnum mt-3 text-xl font-bold" :class="balanceClass">
-            {{ formatCurrency(account.balance) }}
-        </p>
+        <div class="mt-3 flex items-end justify-between gap-2">
+            <p class="tnum text-xl font-bold" :class="balanceClass">
+                {{ formatCurrency(account.balance) }}
+            </p>
+            <Sparkline
+                v-if="hasSpark"
+                :data="account.sparkline"
+                :color="sparkColor"
+                :width="90"
+                :height="32"
+            />
+        </div>
     </Link>
 </template>

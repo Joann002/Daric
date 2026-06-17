@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import Icon from '@/Components/Icon.vue';
+import Sparkline from '@/Components/Sparkline.vue';
 
 const props = defineProps({
     title: String,
@@ -8,6 +9,7 @@ const props = defineProps({
     subtitle: { type: String, default: null },
     icon: { type: String, default: 'banknotes' },
     tone: { type: String, default: 'brand' }, // brand | emerald | rose | sky | amber | slate
+    sparkline: { type: Array, default: null },
 });
 
 const tones = {
@@ -20,7 +22,20 @@ const tones = {
     slate: 'bg-slate-100 text-slate-600 dark:bg-slate-700/40 dark:text-slate-300',
 };
 
+const sparkColors = {
+    brand: '#10b981',
+    emerald: '#10b981',
+    rose: '#f43f5e',
+    sky: '#0ea5e9',
+    amber: '#f59e0b',
+    slate: '#64748b',
+};
+
 const iconTone = computed(() => tones[props.tone] || tones.brand);
+const sparkColor = computed(() => sparkColors[props.tone] || sparkColors.brand);
+const hasSpark = computed(
+    () => Array.isArray(props.sparkline) && props.sparkline.length > 1,
+);
 </script>
 
 <template>
@@ -51,5 +66,13 @@ const iconTone = computed(() => tones[props.tone] || tones.brand);
                 <Icon :name="icon" class="h-6 w-6" />
             </span>
         </div>
+        <Sparkline
+            v-if="hasSpark"
+            :data="sparkline"
+            :color="sparkColor"
+            :width="200"
+            :height="36"
+            class="mt-3 w-full"
+        />
     </div>
 </template>

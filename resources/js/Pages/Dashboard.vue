@@ -1,11 +1,15 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, defineAsyncComponent } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import StatCard from '@/Components/StatCard.vue';
 import AccountCard from '@/Components/AccountCard.vue';
-import PieChart from '@/Components/PieChart.vue';
-import LineChart from '@/Components/LineChart.vue';
+// Lazy-loaded: ApexCharts & FullCalendar are heavy, split into their own chunks
+const PieChart = defineAsyncComponent(() => import('@/Components/PieChart.vue'));
+const LineChart = defineAsyncComponent(() => import('@/Components/LineChart.vue'));
+const CalendarView = defineAsyncComponent(
+    () => import('@/Components/CalendarView.vue'),
+);
 import BudgetProgress from '@/Components/BudgetProgress.vue';
 import TransactionList from '@/Components/TransactionList.vue';
 import PageHeader from '@/Components/ui/PageHeader.vue';
@@ -24,10 +28,29 @@ const props = defineProps({
     incomesByCategory: Array,
     monthlyEvolution: Array,
     budgets: Array,
+    calendarEvents: Array,
     currentMonth: String,
 });
 
 const selectedMonth = ref(props.currentMonth);
+
+const incomeSeries = computed(() => props.monthlyEvolution.map((m) => m.income));
+const expenseSeries = computed(() =>
+    props.monthlyEvolution.map((m) => m.expense),
+);
+const balanceSeries = computed(() =>
+    props.monthlyEvolution.map((m) => m.balance),
+);
+const totalBalanceSeries = computed(() => {
+    const series = props.accounts
+        .map((a) => a.sparkline)
+        .filter((s) => Array.isArray(s) && s.length);
+    if (!series.length) return [];
+    const length = Math.max(...series.map((s) => s.length));
+    return Array.from({ length }, (_, i) =>
+        series.reduce((sum, s) => sum + (Number(s[i]) || 0), 0),
+    );
+});
 
 const loadData = () => {
     router.get(
@@ -66,24 +89,28 @@ const loadData = () => {
                 :value="formatCurrency(totalBalance)"
                 icon="wallet"
                 tone="brand"
+                :sparkline="totalBalanceSeries"
             />
             <StatCard
                 title="Revenus du mois"
                 :value="formatCurrency(monthIncome)"
                 icon="trendingUp"
                 tone="emerald"
+                :sparkline="incomeSeries"
             />
             <StatCard
                 title="Dépenses du mois"
                 :value="formatCurrency(monthExpense)"
                 icon="trendingDown"
                 tone="rose"
+                :sparkline="expenseSeries"
             />
             <StatCard
                 title="Balance du mois"
                 :value="formatCurrency(monthIncome - monthExpense)"
                 icon="scale"
                 :tone="monthIncome - monthExpense >= 0 ? 'emerald' : 'rose'"
+                :sparkline="balanceSeries"
             />
         </div>
 
@@ -153,6 +180,17 @@ const loadData = () => {
                 <LineChart :data="monthlyEvolution" />
             </Card>
         </div>
+
+        <!-- Calendar -->
+        <Card class="mt-6">
+            <h3 class="mb-4 text-base font-semibold">
+                Calendrier des transactions
+            </h3>
+            <CalendarView
+                :events="calendarEvents"
+                :initial-date="currentMonth"
+            />
+        </Card>
 
         <!-- Budgets -->
         <Card v-if="budgets.length" class="mt-6">
