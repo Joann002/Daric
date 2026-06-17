@@ -88,7 +88,7 @@ const features = [
                 class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700 ring-1 ring-inset ring-brand-600/20 dark:bg-brand-500/10 dark:text-brand-400"
             >
                 <Icon name="sparkles" class="h-4 w-4" />
-                Pensé pour l'Afrique centrale · XAF & Mobile Money
+                Pensé pour Madagascar · Ariary & Mobile Money
             </span>
             <h1
                 class="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl"

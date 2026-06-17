@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->enum('type', ['cash', 'banque', 'mobile_money']);
             $table->decimal('balance', 15, 2)->default(0);
-            $table->string('currency', 3)->default('XAF');
+            $table->string('currency', 3)->default('MGA');
             $table->timestamps();
         });
     }

@@ -18,7 +18,7 @@ class AccountFactory extends Factory
             'name' => fake()->words(2, true),
             'type' => fake()->randomElement(['cash', 'banque', 'mobile_money']),
             'balance' => 0,
-            'currency' => 'XAF',
+            'currency' => 'MGA',
         ];
     }
 }

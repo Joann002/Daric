@@ -40,10 +40,9 @@ const submit = () => form.put(route('accounts.update', props.account.id));
 
             <FormField label="Devise" required :error="form.errors.currency">
                 <select v-model="form.currency" class="input" required>
-                    <option value="XAF">XAF — Franc CFA</option>
+                    <option value="MGA">MGA — Ariary</option>
                     <option value="EUR">EUR — Euro</option>
                     <option value="USD">USD — Dollar US</option>
-                    <option value="GBP">GBP — Livre Sterling</option>
                 </select>
             </FormField>
 
