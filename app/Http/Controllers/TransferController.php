@@ -41,9 +41,7 @@ class TransferController extends Controller
 
     public function destroy(Transfer $transfer)
     {
-        if ($transfer->fromAccount->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $transfer);
 
         $transfer->delete();
 

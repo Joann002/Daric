@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
-use App\Models\Transaction;
 use App\Models\Account;
 use App\Models\Category;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -42,7 +42,7 @@ class TransactionController extends Controller
         }
 
         if ($request->search) {
-            $query->where('description', 'like', '%' . $request->search . '%');
+            $query->where('description', 'like', '%'.$request->search.'%');
         }
 
         $transactions = $query->paginate(20)->withQueryString();
@@ -76,7 +76,7 @@ class TransactionController extends Controller
     public function store(StoreTransactionRequest $request)
     {
         $account = Account::findOrFail($request->account_id);
-        
+
         if ($account->user_id !== auth()->id()) {
             abort(403);
         }
@@ -89,9 +89,7 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
-        if ($transaction->account->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('view', $transaction);
 
         $transaction->load(['account', 'category']);
 
@@ -102,9 +100,7 @@ class TransactionController extends Controller
 
     public function edit(Transaction $transaction)
     {
-        if ($transaction->account->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $transaction);
 
         $accounts = auth()->user()->accounts;
         $categories = Category::whereNull('user_id')
@@ -120,12 +116,10 @@ class TransactionController extends Controller
 
     public function update(UpdateTransactionRequest $request, Transaction $transaction)
     {
-        if ($transaction->account->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $transaction);
 
         $account = Account::findOrFail($request->account_id);
-        
+
         if ($account->user_id !== auth()->id()) {
             abort(403);
         }
@@ -138,9 +132,7 @@ class TransactionController extends Controller
 
     public function destroy(Transaction $transaction)
     {
-        if ($transaction->account->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $transaction);
 
         $transaction->delete();
 

@@ -14,7 +14,7 @@ class BudgetController extends Controller
     public function index()
     {
         $currentMonth = Carbon::now()->format('Y-m');
-        
+
         $budgets = Budget::with('category')
             ->where('user_id', auth()->id())
             ->where('month', $currentMonth)
@@ -67,9 +67,7 @@ class BudgetController extends Controller
 
     public function edit(Budget $budget)
     {
-        if ($budget->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $budget);
 
         $expenseCategories = Category::where('type', 'expense')
             ->where(function ($q) {
@@ -85,9 +83,7 @@ class BudgetController extends Controller
 
     public function update(UpdateBudgetRequest $request, Budget $budget)
     {
-        if ($budget->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $budget);
 
         $budget->update($request->validated());
 
@@ -97,9 +93,7 @@ class BudgetController extends Controller
 
     public function destroy(Budget $budget)
     {
-        if ($budget->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $budget);
 
         $budget->delete();
 

@@ -49,9 +49,7 @@ class DebtController extends Controller
 
     public function edit(Debt $debt)
     {
-        if ($debt->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $debt);
 
         return Inertia::render('Debts/Edit', [
             'debt' => $debt,
@@ -60,9 +58,7 @@ class DebtController extends Controller
 
     public function update(UpdateDebtRequest $request, Debt $debt)
     {
-        if ($debt->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $debt);
 
         $debt->update($request->validated());
 
@@ -72,9 +68,7 @@ class DebtController extends Controller
 
     public function destroy(Debt $debt)
     {
-        if ($debt->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $debt);
 
         $debt->delete();
 

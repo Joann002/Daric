@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Budget extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'category_id',
@@ -30,9 +34,14 @@ class Budget extends Model
 
     public function getSpentAmountAttribute()
     {
+        [$year, $month] = explode('-', $this->month);
+        $start = Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $end = $start->copy()->endOfMonth();
+
         return Transaction::where('category_id', $this->category_id)
-            ->whereRaw("DATE_FORMAT(date, '%Y-%m') = ?", [$this->month])
             ->where('type', 'expense')
+            ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+            ->whereHas('account', fn ($q) => $q->where('user_id', $this->user_id))
             ->sum('amount');
     }
 
@@ -41,6 +50,7 @@ class Budget extends Model
         if ($this->limit_amount == 0) {
             return 0;
         }
+
         return min(($this->spent_amount / $this->limit_amount) * 100, 100);
     }
 }

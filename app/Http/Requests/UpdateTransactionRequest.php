@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AccessibleCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTransactionRequest extends FormRequest
@@ -15,7 +16,7 @@ class UpdateTransactionRequest extends FormRequest
     {
         return [
             'account_id' => ['required', 'exists:accounts,id'],
-            'category_id' => ['required', 'exists:categories,id'],
+            'category_id' => ['required', new AccessibleCategory],
             'type' => ['required', 'in:income,expense'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'date' => ['required', 'date'],

@@ -36,13 +36,7 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
-        if ($category->user_id && $category->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        if (!$category->user_id) {
-            abort(403, 'Impossible de modifier une catégorie par défaut');
-        }
+        $this->authorize('update', $category);
 
         return Inertia::render('Categories/Edit', [
             'category' => $category,
@@ -51,9 +45,7 @@ class CategoryController extends Controller
 
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        if ($category->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $category);
 
         $category->update($request->validated());
 
@@ -63,9 +55,7 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
-        if ($category->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $category);
 
         $category->delete();
 

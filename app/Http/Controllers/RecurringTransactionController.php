@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRecurringTransactionRequest;
 use App\Http\Requests\UpdateRecurringTransactionRequest;
-use App\Models\RecurringTransaction;
 use App\Models\Account;
 use App\Models\Category;
+use App\Models\RecurringTransaction;
 use Inertia\Inertia;
 
 class RecurringTransactionController extends Controller
@@ -41,7 +41,7 @@ class RecurringTransactionController extends Controller
     public function store(StoreRecurringTransactionRequest $request)
     {
         $account = Account::findOrFail($request->account_id);
-        
+
         if ($account->user_id !== auth()->id()) {
             abort(403);
         }
@@ -54,9 +54,7 @@ class RecurringTransactionController extends Controller
 
     public function edit(RecurringTransaction $recurringTransaction)
     {
-        if ($recurringTransaction->account->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $recurringTransaction);
 
         $accounts = auth()->user()->accounts;
         $categories = Category::whereNull('user_id')
@@ -72,9 +70,7 @@ class RecurringTransactionController extends Controller
 
     public function update(UpdateRecurringTransactionRequest $request, RecurringTransaction $recurringTransaction)
     {
-        if ($recurringTransaction->account->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('update', $recurringTransaction);
 
         $recurringTransaction->update($request->validated());
 
@@ -84,9 +80,7 @@ class RecurringTransactionController extends Controller
 
     public function destroy(RecurringTransaction $recurringTransaction)
     {
-        if ($recurringTransaction->account->user_id !== auth()->id()) {
-            abort(403);
-        }
+        $this->authorize('delete', $recurringTransaction);
 
         $recurringTransaction->delete();
 

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AccessibleCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateBudgetRequest extends FormRequest
 {
@@ -14,7 +16,15 @@ class UpdateBudgetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id' => ['required', 'exists:categories,id'],
+            'category_id' => [
+                'required',
+                new AccessibleCategory,
+                Rule::unique('budgets')
+                    ->ignore($this->route('budget'))
+                    ->where(fn ($q) => $q
+                        ->where('user_id', auth()->id())
+                        ->where('month', $this->input('month'))),
+            ],
             'month' => ['required', 'string', 'regex:/^\d{4}-\d{2}$/'],
             'limit_amount' => ['required', 'numeric', 'min:0.01'],
         ];
@@ -24,6 +34,7 @@ class UpdateBudgetRequest extends FormRequest
     {
         return [
             'category_id.required' => 'La catégorie est obligatoire',
+            'category_id.unique' => 'Un budget existe déjà pour cette catégorie ce mois-ci',
             'month.required' => 'Le mois est obligatoire',
             'month.regex' => 'Le format du mois est invalide (YYYY-MM)',
             'limit_amount.required' => 'Le montant limite est obligatoire',
