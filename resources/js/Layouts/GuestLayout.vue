@@ -5,18 +5,37 @@ import { Link } from '@inertiajs/vue3';
 
 <template>
     <div
-        class="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0 dark:bg-gray-900"
+        class="flex min-h-dvh flex-col items-center justify-center bg-slate-50 px-4 py-10 dark:bg-slate-950"
     >
-        <div>
-            <Link href="/">
-                <ApplicationLogo class="h-20 w-20 fill-current text-gray-500" />
-            </Link>
+        <!-- Subtle brand backdrop -->
+        <div
+            class="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+            aria-hidden="true"
+        >
+            <div
+                class="absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-brand-400/20 blur-3xl"
+            />
         </div>
 
-        <div
-            class="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg dark:bg-gray-800"
-        >
-            <slot />
+        <Link href="/" class="flex items-center gap-2.5">
+            <span
+                class="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-600 text-white shadow-sm"
+            >
+                <ApplicationLogo class="h-6 w-6" />
+            </span>
+            <span class="text-2xl font-bold text-slate-900 dark:text-white">
+                Daric
+            </span>
+        </Link>
+
+        <div class="mt-8 w-full sm:max-w-md">
+            <div class="card p-6 sm:p-8">
+                <slot />
+            </div>
         </div>
+
+        <p class="mt-6 text-xs text-slate-400">
+            Votre argent, en toute clarté.
+        </p>
     </div>
 </template>

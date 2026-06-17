@@ -22,12 +22,20 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Register" />
+        <Head title="Inscription" />
 
-        <form @submit.prevent="submit">
+        <div class="mb-6">
+            <h1 class="text-xl font-bold text-slate-900 dark:text-white">
+                Créer un compte
+            </h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Commencez à piloter vos finances en quelques secondes.
+            </p>
+        </div>
+
+        <form @submit.prevent="submit" class="space-y-4">
             <div>
-                <InputLabel for="name" value="Name" />
-
+                <InputLabel for="name" value="Nom complet" />
                 <TextInput
                     id="name"
                     type="text"
@@ -37,13 +45,11 @@ const submit = () => {
                     autofocus
                     autocomplete="name"
                 />
-
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-
+            <div>
+                <InputLabel for="email" value="Adresse e-mail" />
                 <TextInput
                     id="email"
                     type="email"
@@ -52,13 +58,11 @@ const submit = () => {
                     required
                     autocomplete="username"
                 />
-
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
+            <div>
+                <InputLabel for="password" value="Mot de passe" />
                 <TextInput
                     id="password"
                     type="password"
@@ -67,16 +71,14 @@ const submit = () => {
                     required
                     autocomplete="new-password"
                 />
-
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-4">
+            <div>
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    value="Confirmer le mot de passe"
                 />
-
                 <TextInput
                     id="password_confirmation"
                     type="password"
@@ -85,29 +87,29 @@ const submit = () => {
                     required
                     autocomplete="new-password"
                 />
-
                 <InputError
                     class="mt-2"
                     :message="form.errors.password_confirmation"
                 />
             </div>
 
-            <div class="mt-4 flex items-center justify-end">
+            <PrimaryButton
+                class="w-full"
+                :class="{ 'opacity-50': form.processing }"
+                :disabled="form.processing"
+            >
+                Créer mon compte
+            </PrimaryButton>
+
+            <p class="text-center text-sm text-slate-500 dark:text-slate-400">
+                Déjà inscrit ?
                 <Link
                     :href="route('login')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                    class="font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400"
                 >
-                    Already registered?
+                    Se connecter
                 </Link>
-
-                <PrimaryButton
-                    class="ms-4"
-                    :class="{ 'opacity-25': form.processing }"
-                    :disabled="form.processing"
-                >
-                    Register
-                </PrimaryButton>
-            </div>
+            </p>
         </form>
     </GuestLayout>
 </template>
