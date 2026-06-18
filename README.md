@@ -87,4 +87,4 @@ Ce projet est sous licence MIT.
 
 ## 👨‍💻 Auteur
 
-Créé avec ❤️ pour la gestion de finances personnelles.
+Joann Michel
