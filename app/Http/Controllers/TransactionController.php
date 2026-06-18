@@ -60,16 +60,22 @@ class TransactionController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $accounts = auth()->user()->accounts;
         $categories = Category::whereNull('user_id')
             ->orWhere('user_id', auth()->id())
             ->get();
 
+        $defaultDate = null;
+        if ($request->filled('date') && strtotime($request->date) !== false) {
+            $defaultDate = date('Y-m-d', strtotime($request->date));
+        }
+
         return Inertia::render('Transactions/Create', [
             'accounts' => $accounts,
             'categories' => $categories,
+            'defaultDate' => $defaultDate,
         ]);
     }
 

@@ -130,6 +130,13 @@
     font-weight: 600;
     cursor: pointer;
 }
+.daric-calendar .fc-daygrid-day {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+.daric-calendar .fc-daygrid-day:hover {
+    background-color: rgba(16, 185, 129, 0.06);
+}
 .dark .daric-calendar {
     --fc-border-color: #1e293b;
     --fc-neutral-bg-color: #0f172a;

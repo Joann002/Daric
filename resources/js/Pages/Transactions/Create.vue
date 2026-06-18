@@ -8,6 +8,7 @@ import { formatCurrency } from '@/composables/useFormat';
 const props = defineProps({
     accounts: Array,
     categories: Array,
+    defaultDate: { type: String, default: null },
 });
 
 const form = useForm({
@@ -15,7 +16,7 @@ const form = useForm({
     account_id: '',
     category_id: '',
     amount: '',
-    date: new Date().toISOString().split('T')[0],
+    date: props.defaultDate || new Date().toISOString().split('T')[0],
     description: '',
 });
 
